@@ -25,6 +25,7 @@ export default function Home() {
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [audioLevel, setAudioLevel] = useState<number>(0.2);
   const [activePresetId, setActivePresetId] = useState<string>(FARMER_PRESETS[0].id);
+  const [sessionId, setSessionId] = useState<string>("");
 
   // Subtitle State
   const [currentSubtitle, setCurrentSubtitle] = useState<string>(
@@ -47,6 +48,37 @@ export default function Home() {
 
   const speechTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioSimTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Initialize Backend Session on Load
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/chat/start?language=${currentLanguage.code}`, {
+          method: "POST"
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.session_id) {
+            setSessionId(data.session_id);
+            if (data.greeting) {
+              setCurrentSubtitle(data.greeting);
+              setMessages([
+                {
+                  id: "1",
+                  sender: "agent",
+                  text: data.greeting,
+                  timestamp: "Just now",
+                },
+              ]);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("FastAPI backend not running at localhost:8000, using local interactive state", err);
+      }
+    };
+    initSession();
+  }, [currentLanguage]);
 
   // Clean speech synthesis wrapper
   const triggerAgentSpeech = (
@@ -151,27 +183,9 @@ export default function Home() {
         const preset = FARMER_PRESETS[Math.floor(Math.random() * FARMER_PRESETS.length)];
         setActivePresetId(preset.id);
         const isEn = currentLanguage.code === "en";
-        const reply = isEn ? preset.agentResponseEnglish : preset.agentResponseHindi;
-        const trans = isEn ? preset.agentResponseHindi : preset.agentResponseEnglish;
+        const userText = isEn ? preset.englishQuery : preset.hindiQuery;
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString(),
-            sender: "user",
-            text: isEn ? preset.englishQuery : preset.hindiQuery,
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          },
-          {
-            id: (Date.now() + 1).toString(),
-            sender: "agent",
-            text: reply,
-            translatedText: trans,
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          },
-        ]);
-
-        triggerAgentSpeech(reply, trans, 8500);
+        handleSendMessage(userText);
       }, 3500);
     } else {
       setStatus("idle");
@@ -189,31 +203,12 @@ export default function Home() {
     setActivePresetId(preset.id);
     const isEn = currentLanguage.code === "en";
     const userQuery = isEn ? preset.englishQuery : preset.hindiQuery;
-    const agentResponse = isEn ? preset.agentResponseEnglish : preset.agentResponseHindi;
-    const translated = isEn ? preset.agentResponseHindi : preset.agentResponseEnglish;
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        sender: "user",
-        text: userQuery,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-      {
-        id: (Date.now() + 1).toString(),
-        sender: "agent",
-        text: agentResponse,
-        translatedText: translated,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
-
-    triggerAgentSpeech(agentResponse, translated, 9000);
+    handleSendMessage(userQuery);
   };
 
   // Chat message submission from Keyboard Chat Drawer
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     const newMsg: ChatMessage = {
       id: Date.now().toString(),
       sender: "user",
@@ -224,10 +219,40 @@ export default function Home() {
     setMessages((prev) => [...prev, newMsg]);
     setStatus("thinking");
 
-    // Generate responsive farm advisory answer
+    try {
+      const res = await fetch("http://localhost:8000/api/chat/interact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId || "web-session",
+          message: text,
+          language: currentLanguage.code,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const reply = data.agent_response;
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "agent",
+            text: reply,
+            translatedText: data.diagnosis?.spokenSummary || reply,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          },
+        ]);
+        triggerAgentSpeech(reply, data.diagnosis?.spokenSummary || reply, 7500);
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend server not connected at localhost:8000, using local advisory response", err);
+    }
+
+    // Fallback response if backend server is not active
     setTimeout(() => {
-      const responseHindi = `आपके प्रश्न "${text}" के लिए किसान डिजिटल सेवा केंद्र से विवरण प्राप्त हो गया है। हमारी अनुशंसा के अनुसार नजदीकी कृषि विज्ञान केंद्र से संपर्क करें अथवा 1800-180-1551 पर कॉल करें।`;
-      const responseEnglish = `Details retrieved for your inquiry: "${text}". As per regional advisory, please consult your local Krishi Vigyan Kendra or dial toll-free 1800-180-1551.`;
+      const responseHindi = `आपके प्रश्न "${text}" के लिए विवरण प्राप्त हो गया है। प्रधानमंत्री फसल बीमा योजना नियम अनुसार 72 घंटे में शिकायत दर्ज करें अथवा 1800-180-1551 पर कॉल करें।`;
+      const responseEnglish = `Details retrieved for your inquiry: "${text}". Under PMFBY guidelines, report loss within 72 hours or call toll-free 1800-180-1551.`;
 
       const isEn = currentLanguage.code === "en";
       const finalReply = isEn ? responseEnglish : responseHindi;
@@ -245,7 +270,7 @@ export default function Home() {
       ]);
 
       triggerAgentSpeech(finalReply, transReply, 7000);
-    }, 1200);
+    }, 1000);
   };
 
   // Quick prompts for keyboard drawer
