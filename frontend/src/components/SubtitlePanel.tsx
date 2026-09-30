@@ -16,7 +16,7 @@ export const SubtitlePanel: React.FC<SubtitlePanelProps> = ({
   playbackSpeed = 1.0,
 }) => {
   const [activeWordIndex, setActiveWordIndex] = useState(0);
-  const words = currentSubtitle.split(" ");
+  const words = (currentSubtitle || "").split(" ");
 
   // Progressively highlight words when speaking
   useEffect(() => {
