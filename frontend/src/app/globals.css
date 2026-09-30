@@ -1,0 +1,224 @@
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Dark Amethyst Deep */
+  --color-amethyst-deep: #10002b;
+  --color-amethyst-deep-100: #030008;
+  --color-amethyst-deep-200: #060010;
+  --color-amethyst-deep-300: #090018;
+  --color-amethyst-deep-400: #0c0021;
+  --color-amethyst-deep-500: #10002b;
+  --color-amethyst-deep-600: #310087;
+  --color-amethyst-deep-700: #5400e4;
+  --color-amethyst-deep-800: #8843ff;
+  --color-amethyst-deep-900: #c4a1ff;
+
+  /* Dark Amethyst */
+  --color-dark-amethyst: #240046;
+  --color-dark-amethyst-100: #07000e;
+  --color-dark-amethyst-200: #0f001d;
+  --color-dark-amethyst-300: #16002b;
+  --color-dark-amethyst-400: #1e0039;
+  --color-dark-amethyst-500: #240046;
+  --color-dark-amethyst-600: #52009f;
+  --color-dark-amethyst-700: #8000f7;
+  --color-dark-amethyst-800: #aa50ff;
+  --color-dark-amethyst-900: #d5a7ff;
+
+  /* Indigo Ink */
+  --color-indigo-ink: #3c096c;
+  --color-indigo-ink-100: #0c0216;
+  --color-indigo-ink-200: #18042b;
+  --color-indigo-ink-300: #240541;
+  --color-indigo-ink-400: #300757;
+  --color-indigo-ink-500: #3c096c;
+  --color-indigo-ink-600: #650fb5;
+  --color-indigo-ink-700: #8d25ed;
+  --color-indigo-ink-800: #b36ef3;
+  --color-indigo-ink-900: #d9b6f9;
+
+  /* Indigo Velvet */
+  --color-indigo-velvet: #5a189a;
+  --color-indigo-velvet-100: #12051f;
+  --color-indigo-velvet-200: #240a3e;
+  --color-indigo-velvet-300: #360e5d;
+  --color-indigo-velvet-400: #47137c;
+  --color-indigo-velvet-500: #5a189a;
+  --color-indigo-velvet-600: #7a21d4;
+  --color-indigo-velvet-700: #9c53e4;
+  --color-indigo-velvet-800: #bd8ced;
+  --color-indigo-velvet-900: #dec6f6;
+
+  /* Royal Violet */
+  --color-royal-violet: #7b2cbf;
+  --color-royal-violet-100: #180926;
+  --color-royal-violet-200: #31114c;
+  --color-royal-violet-300: #491a73;
+  --color-royal-violet-400: #622399;
+  --color-royal-violet-500: #7b2cbf;
+  --color-royal-violet-600: #954bd6;
+  --color-royal-violet-700: #b078e0;
+  --color-royal-violet-800: #caa5eb;
+  --color-royal-violet-900: #e5d2f5;
+
+  /* Lavender Purple */
+  --color-lavender-purple: #9d4edd;
+  --color-lavender-purple-100: #200a33;
+  --color-lavender-purple-200: #401365;
+  --color-lavender-purple-300: #601d98;
+  --color-lavender-purple-400: #8127ca;
+  --color-lavender-purple-500: #9d4edd;
+  --color-lavender-purple-600: #b172e4;
+  --color-lavender-purple-700: #c596eb;
+  --color-lavender-purple-800: #d8b9f2;
+  --color-lavender-purple-900: #ecdcf8;
+
+  /* Mauve Magic */
+  --color-mauve-magic: #c77dff;
+  --color-mauve-magic-100: #2b004d;
+  --color-mauve-magic-200: #570099;
+  --color-mauve-magic-300: #8200e6;
+  --color-mauve-magic-400: #a733ff;
+  --color-mauve-magic-500: #c77dff;
+  --color-mauve-magic-600: #d399ff;
+  --color-mauve-magic-700: #deb3ff;
+  --color-mauve-magic-800: #e9ccff;
+  --color-mauve-magic-900: #f4e5ff;
+
+  /* Mauve */
+  --color-mauve: #e0aaff;
+  --color-mauve-100: #360055;
+  --color-mauve-200: #6b00a9;
+  --color-mauve-300: #a100fe;
+  --color-mauve-400: #c054ff;
+  --color-mauve-500: #e0aaff;
+  --color-mauve-600: #e6baff;
+  --color-mauve-700: #eccbff;
+  --color-mauve-800: #f2dcff;
+  --color-mauve-900: #f9eeff;
+
+  /* Semantic UI Aliases mapped to Amethyst & Mauve */
+  --color-mint: #e0aaff;             /* Mauve DEFAULT - Bright voice glow */
+  --color-sage: #c77dff;             /* Mauve Magic DEFAULT - Secondary accents */
+  --color-eucalyptus: #caa5eb;       /* Royal Violet 800 - Muted subtitles */
+  --color-slate-dusk: #240046;       /* Dark Amethyst DEFAULT - Card surfaces */
+  --color-midnight: #10002b;         /* Dark Amethyst Deep DEFAULT - Background */
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono);
+}
+
+:root {
+  /* Core Semantic Mappings */
+  --background: #10002b;
+  --foreground: #f9eeff;
+
+  --card: #240046;
+  --card-foreground: #f9eeff;
+
+  --popover: #3c096c;
+  --popover-foreground: #f9eeff;
+
+  --primary: #c77dff;
+  --primary-foreground: #10002b;
+
+  --secondary: #5a189a;
+  --secondary-foreground: #f4e5ff;
+
+  --muted: #3c096c;
+  --muted-foreground: #caa5eb;
+
+  --accent: #e0aaff;
+  --accent-foreground: #10002b;
+
+  --destructive: #8000f7;
+  --destructive-foreground: #f9eeff;
+
+  --border: rgba(157, 78, 221, 0.28);
+  --input: rgba(60, 9, 108, 0.65);
+  --ring: #c77dff;
+
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse 85% 55% at 50% -20%, rgba(123, 44, 191, 0.35), transparent 70%),
+    radial-gradient(ellipse 65% 45% at 90% 85%, rgba(199, 125, 255, 0.18), transparent 60%);
+}
+
+/* Glass and glow helpers mapped to amethyst, mauve, and purple */
+.glass-panel {
+  background: rgba(36, 0, 70, 0.68);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.glow-mint, .glow-mauve {
+  box-shadow: 0 0 35px -5px rgba(224, 170, 255, 0.55);
+}
+
+.glow-sage, .glow-violet {
+  box-shadow: 0 0 25px -5px rgba(199, 125, 255, 0.45);
+}
+
+/* Custom scrollbar matching Amethyst palette */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #10002b;
+}
+::-webkit-scrollbar-thumb {
+  background: #5a189a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7b2cbf;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
